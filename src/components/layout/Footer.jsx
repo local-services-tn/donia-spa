@@ -29,7 +29,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <img src="/images/logo.png" alt="Donia Spa" className="w-10 h-10 rounded-full object-cover border border-gold/30" />
+              <img src={`${import.meta.env.BASE_URL}images/logo.png`} alt="Donia Spa" className="w-10 h-10 rounded-full object-cover border border-gold/30" />
               <div>
                 <span className="font-display text-xl font-bold text-white tracking-wide">DONIA</span>
                 <span className="block text-[10px] font-handwriting tracking-widest text-white/50">SPA & WELLNESS</span>

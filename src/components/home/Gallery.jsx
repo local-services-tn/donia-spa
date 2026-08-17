@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import FadeIn from '../ui/FadeIn'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function Gallery() {
@@ -22,26 +22,21 @@ export default function Gallery() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {Array.isArray(images) && images.map((img, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="group relative rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500"
-            >
-              <img
-                src={img.src}
-                alt={img.caption}
-                loading="lazy"
-                className="w-full h-64 sm:h-72 lg:h-80 object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-espresso/0 group-hover:bg-espresso/20 transition-all duration-500 rounded-3xl flex items-center justify-center">
-                <span className={`text-white font-display text-lg font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-4 group-hover:translate-y-0 ${isArabic ? 'font-arabic' : ''}`}>
-                  {img.caption}
-                </span>
+            <FadeIn key={i} delay={i * 100} direction="scale-up">
+              <div className="group relative rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500">
+                <img
+                  src={`${import.meta.env.BASE_URL}${img.src.startsWith('/') ? img.src.slice(1) : img.src}`}
+                  alt={img.caption}
+                  loading="lazy"
+                  className="w-full h-64 sm:h-72 lg:h-80 object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-espresso/0 group-hover:bg-espresso/20 transition-all duration-500 rounded-3xl flex items-center justify-center">
+                  <span className={`text-white font-display text-lg font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-4 group-hover:translate-y-0 ${isArabic ? 'font-arabic' : ''}`}>
+                    {img.caption}
+                  </span>
+                </div>
               </div>
-            </motion.div>
+            </FadeIn>
           ))}
         </div>
       </div>

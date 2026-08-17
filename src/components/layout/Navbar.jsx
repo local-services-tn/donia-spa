@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
 import LanguageToggle from './LanguageToggle'
@@ -43,11 +42,11 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <img
-              src="/images/logo.png"
-              alt="Donia Spa"
-              className="w-10 h-10 rounded-full object-cover border-2 border-gold/40 group-hover:border-gold transition-colors"
-            />
+              <img
+                src={`${import.meta.env.BASE_URL}images/logo.png`}
+                alt="Donia Spa"
+                className="w-10 h-10 rounded-full object-cover border-2 border-gold/40 group-hover:border-gold transition-colors"
+              />
             <div>
               <span
                 className={`font-display text-xl font-bold tracking-wide transition-colors ${
@@ -123,14 +122,7 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-cream/95 backdrop-blur-lg border-t border-gold/10"
-          >
+      <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-cream/95 backdrop-blur-lg border-t border-gold/10 ${isOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0 border-t-0'}`}>
             <div className="px-4 py-6 space-y-4">
               {navLinks.map((link) => (
                 <Link
@@ -171,9 +163,7 @@ export default function Navbar() {
                 {t('nav.booking')}
               </a>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
     </nav>
   )
 }

@@ -1,14 +1,15 @@
-import { motion } from 'framer-motion'
+import FadeIn from '../ui/FadeIn'
 import { Play } from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function Videos() {
   const { t, isArabic } = useLanguage()
 
+  const base = import.meta.env.BASE_URL
   const videos = [
-    { src: '/videos/video-1.mp4', poster: '/images/products.jpg', alt: 'Inspiration 1' },
-    { src: '/videos/video-2.mp4', poster: '/images/massage-room.jpg', alt: 'Inspiration 2' },
-    { src: '/videos/video-3.mp4', poster: '/images/steam-room.jpg', alt: 'Inspiration 3' },
+    { src: `${base}videos/video-1.mp4`, poster: `${base}images/products.jpg`, alt: 'Inspiration 1' },
+    { src: `${base}videos/video-2.mp4`, poster: `${base}images/massage-room.jpg`, alt: 'Inspiration 2' },
+    { src: `${base}videos/video-3.mp4`, poster: `${base}images/steam-room.jpg`, alt: 'Inspiration 3' },
   ]
 
   return (
@@ -27,35 +28,30 @@ export default function Videos() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {videos.map((video, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15, duration: 0.5 }}
-              className="group relative rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 bg-espresso"
-            >
-              <video
-                src={video.src}
-                poster={video.poster}
-                muted
-                loop
-                playsInline
-                preload="none"
-                className="w-full h-72 sm:h-80 object-cover group-hover:scale-105 transition-all duration-700 opacity-80 group-hover:opacity-100"
-                onMouseEnter={(e) => e.target.play()}
-                onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
-                onTouchStart={(e) => {
-                  const vid = e.target
-                  if (vid.paused) { vid.play() } else { vid.pause(); vid.currentTime = 0 }
-                }}
-              />
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-14 h-14 rounded-full glass flex items-center justify-center opacity-60 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110">
-                  <Play size={24} className="text-white ml-1" fill="white" />
+            <FadeIn key={i} delay={i * 150}>
+              <div className="group relative rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 bg-espresso">
+                <video
+                  src={video.src}
+                  poster={video.poster}
+                  muted
+                  loop
+                  playsInline
+                  preload="none"
+                  className="w-full h-72 sm:h-80 object-cover group-hover:scale-105 transition-all duration-700 opacity-80 group-hover:opacity-100"
+                  onMouseEnter={(e) => e.target.play()}
+                  onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+                  onTouchStart={(e) => {
+                    const vid = e.target
+                    if (vid.paused) { vid.play() } else { vid.pause(); vid.currentTime = 0 }
+                  }}
+                />
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-14 h-14 rounded-full glass flex items-center justify-center opacity-60 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110">
+                    <Play size={24} className="text-white ml-1" fill="white" />
+                  </div>
                 </div>
               </div>
-            </motion.div>
+            </FadeIn>
           ))}
         </div>
       </div>

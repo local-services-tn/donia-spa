@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import FadeIn from '../ui/FadeIn'
 import { Star } from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -22,40 +22,35 @@ export default function Testimonials() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {Array.isArray(testimonials) && testimonials.map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15, duration: 0.5 }}
-              className={`bg-sand/80 rounded-3xl p-6 sm:p-8 border border-gold/10 hover:shadow-lg transition-all duration-500 ${
+            <FadeIn key={i} delay={i * 150}>
+              <div className={`bg-sand/80 rounded-3xl p-6 sm:p-8 border border-gold/10 hover:shadow-lg transition-all duration-500 h-full ${
                 isArabic ? 'text-right' : ''
-              }`}
-            >
-              {/* Stars */}
-              <div className={`flex gap-1 mb-4 ${isArabic ? 'justify-end' : ''}`}>
-                {Array.from({ length: 5 }, (_, j) => (
-                  <Star
-                    key={j}
-                    size={16}
-                    className={j < item.rating ? 'fill-gold text-gold' : 'text-stone/30'}
-                  />
-                ))}
-              </div>
-
-              {/* Quote */}
-              <p className={`text-espresso/80 text-sm sm:text-base leading-relaxed italic mb-6 ${isArabic ? 'font-arabic not-italic' : ''}`}>
-                "{item.text}"
-              </p>
-
-              {/* Author */}
-              <div className="flex items-center gap-3 border-t border-gold/10 pt-4">
-                <div className="w-10 h-10 rounded-full bg-olive/20 flex items-center justify-center text-olive font-display font-bold text-sm">
-                  {item.name.charAt(0)}
+              }`}>
+                {/* Stars */}
+                <div className={`flex gap-1 mb-4 ${isArabic ? 'justify-end' : ''}`}>
+                  {Array.from({ length: 5 }, (_, j) => (
+                    <Star
+                      key={j}
+                      size={16}
+                      className={j < item.rating ? 'fill-gold text-gold' : 'text-stone/30'}
+                    />
+                  ))}
                 </div>
-                <span className="font-display font-semibold text-espresso">{item.name}</span>
+
+                {/* Quote */}
+                <p className={`text-espresso/80 text-sm sm:text-base leading-relaxed italic mb-6 ${isArabic ? 'font-arabic not-italic' : ''}`}>
+                  "{item.text}"
+                </p>
+
+                {/* Author */}
+                <div className="flex items-center gap-3 border-t border-gold/10 pt-4">
+                  <div className="w-10 h-10 rounded-full bg-olive/20 flex items-center justify-center text-olive font-display font-bold text-sm">
+                    {item.name.charAt(0)}
+                  </div>
+                  <span className="font-display font-semibold text-espresso">{item.name}</span>
+                </div>
               </div>
-            </motion.div>
+            </FadeIn>
           ))}
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
+import FadeIn from '../components/ui/FadeIn'
 
 const InstagramIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -26,7 +27,7 @@ export default function About() {
       {/* Hero */}
       <section className="relative h-[50vh] min-h-[350px] flex items-center justify-center overflow-hidden">
         <img
-          src="/images/steam-room.jpg"
+          src={`${import.meta.env.BASE_URL}images/steam-room.jpg`}
           alt="Donia Spa"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -63,42 +64,35 @@ export default function About() {
       <section className="py-20 sm:py-28 bg-cream pattern-bg relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${isArabic ? 'direction-rtl' : ''}`}>
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-              className="relative"
-            >
-              <div className="rounded-3xl overflow-hidden shadow-xl">
-                <img src="/images/products.jpg" alt="Donia Spa Products" className="w-full h-[400px] object-cover" />
+            <FadeIn direction="left">
+              <div className="relative">
+                <div className="rounded-3xl overflow-hidden shadow-xl">
+                  <img src={`${import.meta.env.BASE_URL}images/products.jpg`} alt="Donia Spa Products" className="w-full h-[400px] object-cover" />
+                </div>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 border-2 border-gold/30 rounded-3xl -z-10" />
               </div>
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 border-2 border-gold/30 rounded-3xl -z-10" />
-            </motion.div>
+            </FadeIn>
 
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-            >
-              <span className="font-handwriting text-lg text-olive">✦</span>
-              <h2 className={`font-display text-3xl sm:text-4xl font-bold text-espresso mt-2 mb-6 ${isArabic ? 'font-arabic' : ''}`}>
-                {isArabic ? 'قصتنا' : 'Notre Histoire'}
-              </h2>
-              <div className="space-y-4">
-                {[t('about.story.p1'), t('about.story.p2'), t('about.story.p3')].map((p, i) => (
-                  <p key={i} className={`text-stone text-sm sm:text-base leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>
-                    {p}
+            <FadeIn direction="right" delay={200}>
+              <div>
+                <span className="font-handwriting text-lg text-olive">✦</span>
+                <h2 className={`font-display text-3xl sm:text-4xl font-bold text-espresso mt-2 mb-6 ${isArabic ? 'font-arabic' : ''}`}>
+                  {isArabic ? 'قصتنا' : 'Notre Histoire'}
+                </h2>
+                <div className="space-y-4">
+                  {[t('about.story.p1'), t('about.story.p2'), t('about.story.p3')].map((p, i) => (
+                    <p key={i} className={`text-stone text-sm sm:text-base leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>
+                      {p}
+                    </p>
+                  ))}
+                </div>
+                <div className="mt-6 p-4 bg-olive/5 border-l-4 border-olive rounded-r-xl">
+                  <p className={`text-espresso text-sm italic ${isArabic ? 'font-arabic not-italic' : ''}`}>
+                    {t('about.mission')}
                   </p>
-                ))}
+                </div>
               </div>
-              <div className="mt-6 p-4 bg-olive/5 border-l-4 border-olive rounded-r-xl">
-                <p className={`text-espresso text-sm italic ${isArabic ? 'font-arabic not-italic' : ''}`}>
-                  {t('about.mission')}
-                </p>
-              </div>
-            </motion.div>
+            </FadeIn>
           </div>
         </div>
       </section>
@@ -115,63 +109,49 @@ export default function About() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Address */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-cream rounded-3xl p-6 border border-gold/10 text-center"
-            >
-              <div className="w-12 h-12 mx-auto rounded-full bg-olive/10 flex items-center justify-center mb-4">
-                <MapPin size={20} className="text-olive" />
+            <FadeIn>
+              <div className="bg-cream rounded-3xl p-6 border border-gold/10 text-center h-full">
+                <div className="w-12 h-12 mx-auto rounded-full bg-olive/10 flex items-center justify-center mb-4">
+                  <MapPin size={20} className="text-olive" />
+                </div>
+                <h3 className={`font-display text-lg font-bold text-espresso mb-2 ${isArabic ? 'font-arabic' : ''}`}>
+                  {isArabic ? 'العنوان' : 'Adresse'}
+                </h3>
+                <p className={`text-stone text-sm ${isArabic ? 'font-arabic' : ''}`}>
+                  {t('about.contact.address')}
+                </p>
               </div>
-              <h3 className={`font-display text-lg font-bold text-espresso mb-2 ${isArabic ? 'font-arabic' : ''}`}>
-                {isArabic ? 'العنوان' : 'Adresse'}
-              </h3>
-              <p className={`text-stone text-sm ${isArabic ? 'font-arabic' : ''}`}>
-                {t('about.contact.address')}
-              </p>
-            </motion.div>
+            </FadeIn>
 
-            {/* Phone */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="bg-cream rounded-3xl p-6 border border-gold/10 text-center"
-            >
-              <div className="w-12 h-12 mx-auto rounded-full bg-olive/10 flex items-center justify-center mb-4">
-                <Phone size={20} className="text-olive" />
+            <FadeIn delay={100}>
+              <div className="bg-cream rounded-3xl p-6 border border-gold/10 text-center h-full">
+                <div className="w-12 h-12 mx-auto rounded-full bg-olive/10 flex items-center justify-center mb-4">
+                  <Phone size={20} className="text-olive" />
+                </div>
+                <h3 className={`font-display text-lg font-bold text-espresso mb-2 ${isArabic ? 'font-arabic' : ''}`}>
+                  {isArabic ? 'الهاتف' : 'Téléphone'}
+                </h3>
+                <p className="text-stone text-sm">{t('about.contact.phone1')}</p>
+                <p className="text-stone text-sm">{t('about.contact.phone2')}</p>
               </div>
-              <h3 className={`font-display text-lg font-bold text-espresso mb-2 ${isArabic ? 'font-arabic' : ''}`}>
-                {isArabic ? 'الهاتف' : 'Téléphone'}
-              </h3>
-              <p className="text-stone text-sm">{t('about.contact.phone1')}</p>
-              <p className="text-stone text-sm">{t('about.contact.phone2')}</p>
-            </motion.div>
+            </FadeIn>
 
-            {/* Hours & Email */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="bg-cream rounded-3xl p-6 border border-gold/10 text-center sm:col-span-2 lg:col-span-1"
-            >
-              <div className="w-12 h-12 mx-auto rounded-full bg-olive/10 flex items-center justify-center mb-4">
-                <Clock size={20} className="text-olive" />
+            <FadeIn delay={200}>
+              <div className="bg-cream rounded-3xl p-6 border border-gold/10 text-center sm:col-span-2 lg:col-span-1 h-full">
+                <div className="w-12 h-12 mx-auto rounded-full bg-olive/10 flex items-center justify-center mb-4">
+                  <Clock size={20} className="text-olive" />
+                </div>
+                <h3 className={`font-display text-lg font-bold text-espresso mb-2 ${isArabic ? 'font-arabic' : ''}`}>
+                  {isArabic ? 'المواعيد' : 'Horaires'}
+                </h3>
+                <p className={`text-stone text-sm ${isArabic ? 'font-arabic' : ''}`}>{t('about.contact.hours')}</p>
+                <p className={`text-stone text-sm ${isArabic ? 'font-arabic' : ''}`}>{t('about.contact.hoursDim')}</p>
+                <div className="mt-3 flex items-center justify-center gap-2 text-stone text-sm">
+                  <Mail size={14} />
+                  <span>{t('about.contact.email')}</span>
+                </div>
               </div>
-              <h3 className={`font-display text-lg font-bold text-espresso mb-2 ${isArabic ? 'font-arabic' : ''}`}>
-                {isArabic ? 'المواعيد' : 'Horaires'}
-              </h3>
-              <p className={`text-stone text-sm ${isArabic ? 'font-arabic' : ''}`}>{t('about.contact.hours')}</p>
-              <p className={`text-stone text-sm ${isArabic ? 'font-arabic' : ''}`}>{t('about.contact.hoursDim')}</p>
-              <div className="mt-3 flex items-center justify-center gap-2 text-stone text-sm">
-                <Mail size={14} />
-                <span>{t('about.contact.email')}</span>
-              </div>
-            </motion.div>
+            </FadeIn>
           </div>
 
           {/* Social Media */}
@@ -226,24 +206,21 @@ export default function About() {
             <div className="mt-4 mx-auto w-16 h-0.5 bg-gold/60 rounded-full" />
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="rounded-3xl overflow-hidden shadow-xl border border-gold/10"
-          >
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3247.8!2d10.17!3d36.8!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDQ4JzAwLjAiTiAxMMKwMTAnMTIuMCJF!5e0!3m2!1sfr!2stn!4v1"
-              width="100%"
-              height="450"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Donia Spa Location"
-              className="w-full"
-            />
-          </motion.div>
+          <FadeIn>
+            <div className="rounded-3xl overflow-hidden shadow-xl border border-gold/10">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3247.8!2d10.17!3d36.8!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDQ4JzAwLjAiTiAxMMKwMTAnMTIuMCJF!5e0!3m2!1sfr!2stn!4v1"
+                width="100%"
+                height="450"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Donia Spa Location"
+                className="w-full"
+              />
+            </div>
+          </FadeIn>
 
           <div className="text-center mt-6">
             <a

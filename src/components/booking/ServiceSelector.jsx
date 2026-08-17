@@ -1,15 +1,18 @@
 import { motion } from 'framer-motion'
 import { useLanguage } from '../../context/LanguageContext'
+import { Droplets, Sparkles, Leaf, Flower2, Scissors, Wind } from 'lucide-react'
+
+const serviceIcons = [Droplets, Sparkles, Leaf, Flower2, Scissors, Wind]
 
 export default function ServiceSelector({ selected, onSelect }) {
   const { t, isArabic } = useLanguage()
   const services = t('services.items')
-  const icons = ['💆', '🧖', '✨', '🌿', '💅', '💇']
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       {Array.isArray(services) && services.map((service, i) => {
         const isSelected = selected === i
+        const Icon = serviceIcons[i] || Sparkles
         return (
           <motion.button
             key={i}
@@ -22,7 +25,9 @@ export default function ServiceSelector({ selected, onSelect }) {
                 : 'bg-cream border-gold/10 hover:border-olive/30'
             } ${isArabic ? 'text-right' : ''}`}
           >
-            <span className="text-2xl">{icons[i]}</span>
+            <div className="w-9 h-9 rounded-full bg-olive/10 flex items-center justify-center">
+              <Icon size={18} className="text-olive" />
+            </div>
             <h4 className={`font-display text-sm font-bold text-espresso mt-2 ${isArabic ? 'font-arabic text-xs' : ''}`}>
               {service.name}
             </h4>

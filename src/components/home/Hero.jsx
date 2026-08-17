@@ -15,7 +15,7 @@ export default function Hero() {
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source src="/videos/hero.mp4" type="video/mp4" />
+        <source src={`${import.meta.env.BASE_URL}videos/hero.mp4`} type="video/mp4" />
       </video>
 
       {/* Green Tint Overlay */}
