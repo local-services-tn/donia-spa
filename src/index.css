@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sand: #F5EDE4;
+  --color-cream: #FFF8F0;
+  --color-olive: #6B7B5E;
+  --color-olive-dark: #4A5A3F;
+  --color-olive-light: #A8B89A;
+  --color-terracotta: #C4956A;
+  --color-espresso: #3D2E24;
+  --color-stone: #8A7A6E;
+  --color-gold: #C9A96E;
+  --color-sage: #E8E4D9;
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-handwriting: 'Dancing Script', cursive;
+  --font-arabic: 'Noto Kufi Arabic', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-sand);
+  color: var(--color-espresso);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-handwriting {
+  font-family: var(--font-handwriting);
+}
+
+.font-arabic {
+  font-family: var(--font-arabic);
+}
+
+/* Moroccan pattern overlay */
+.pattern-bg {
+  position: relative;
+}
+.pattern-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236B7B5E' fill-opacity='1'%3E%3Cpath d='M40 0L80 40L40 80L0 40L40 0zm0 8L8 40l32 32 32-32L40 8z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pattern-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Star pattern for sections */
+.pattern-stars::before {
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9A96E' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-sand);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-olive-light);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-olive);
+}
+
+/* RTL support */
+.direction-rtl {
+  direction: rtl;
+  text-align: right;
+}
+.direction-rtl > * {
+  text-align: right;
+}
+
+/* Glass morphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(61, 46, 36, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(61, 46, 36, 0.1);
+}
+
+/* Green tint overlay for video */
+.video-tint {
+  background: linear-gradient(
+    135deg,
+    rgba(107, 123, 94, 0.35) 0%,
+    rgba(74, 90, 63, 0.25) 50%,
+    rgba(107, 123, 94, 0.3) 100%
+  );
+}
+
+/* Success animation keyframes */
+@keyframes draw-circle {
+  0% { stroke-dashoffset: 314; }
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes draw-check {
+  0% { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes scale-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+@keyframes fade-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes confetti-fall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100px) rotate(720deg); opacity: 0; }
+}
+
+.animate-draw-circle {
+  animation: draw-circle 0.8s ease-out forwards;
+}
+.animate-draw-check {
+  animation: draw-check 0.4s ease-out 0.6s forwards;
+  stroke-dashoffset: 100;
+}
+.animate-scale-pulse {
+  animation: scale-pulse 2s ease-in-out infinite;
+}
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out forwards;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

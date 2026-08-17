@@ -1,0 +1,7 @@
+node_modules/
+dist/
+audit-*.png
+dashboard-login.png
+.DS_Store
+Thumbs.db
+*.log
