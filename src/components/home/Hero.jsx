@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useLanguage } from '../../context/LanguageContext'
-import { playIcon, checkIcon } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 
 export default function Home() {
   const { t, isArabic } = useLanguage()
@@ -16,7 +16,7 @@ export default function Home() {
         className="absolute inset-0 w-full h-full object-cover"
         style={{ filter: 'brightness(0.6)' }}
       >
-        <source src="/videos/restaurant-bg.mp4" type="video/mp4" />
+        <source src={`${import.meta.env.BASE_URL}videos/restaurant-bg.mp4`} type="video/mp4" />
       </video>
 
       {/* Dark overlay */}
@@ -90,7 +90,7 @@ export default function Home() {
             animate={{ y: [0, 8, 0] }}
             transition={{ repeat: Infinity, duration: 2 }}
           >
-            <playIcon className="w-8 h-8" />
+            <ChevronDown className="w-8 h-8" />
           </motion.div>
         </a>
       </motion.div>

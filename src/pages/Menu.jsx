@@ -1,4 +1,4 @@
-import { useLanguage } from '../../context/LanguageContext'
+import { useLanguage } from '../context/LanguageContext'
 
 export default function MenuPage() {
   const { t, isArabic } = useLanguage()

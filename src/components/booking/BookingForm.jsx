@@ -2,6 +2,31 @@ import { useState } from 'react'
 import { useLanguage } from '../../context/LanguageContext'
 import { Sun, Moon, Calendar, Clock, X, Check, MapPin, Phone, Mail } from 'lucide-react'
 
+function createTables() {
+  const tables = []
+  for (let i = 1; i <= 5; i++) {
+    tables.push({ id: `t6-${i}`, size: 6, status: 'available', x: (i - 1) * 60 + 100, y: 100 })
+  }
+  for (let i = 1; i <= 10; i++) {
+    tables.push({ id: `t4-${i}`, size: 4, status: 'available', x: (i - 1) * 50 + 50, y: 250 })
+  }
+  return tables
+}
+
+function generateAvailableTimes() {
+  const times = []
+  for (let h = 6; h < 27; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      if (h === 27 && m > 0) break
+      const hr = h % 24
+      const ampm = h < 12 ? 'AM' : 'PM'
+      const display = h > 12 ? h - 12 : h === 0 ? 12 : h
+      times.push(`${display}:${m < 10 ? '0' : ''}${m} ${ampm}`)
+    }
+  }
+  return times
+}
+
 export default function BookingForm() {
   const { t, isArabic } = useLanguage()
   const [step, setStep] = useState(1)
@@ -13,339 +38,291 @@ export default function BookingForm() {
     guests: 2,
     specialRequests: ''
   })
-
-  const [tables, setTables] = useState(createTables())
+  const [tables, setTables] = useState(createTables)
   const [selectedTable, setSelectedTable] = useState(null)
-  const [availableTimes, setAvailableTimes] = useState([])
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
-  const [isTimePickerOpen, setIsTimePickerOpen] = useState(false)
 
-  // Create 15 tables: 5 for 6 people, 10 for 2-4 people
-  function createTables() {
-    const tables = []
-    // 5 tables for 6 people
-    for (let i = 1; i <= 5; i++) {
-      tables.push({ id: `t6-${i}`, size: 6, status: 'available', x: (i - 1) * 60 + 100, y: 100 })
-    }
-    // 10 tables for 2-4 people
-    for (let i = 1; i <= 10; i++) {
-      tables.push({ id: `t4-${i}`, size: 4, status: 'available', x: (i - 1) * 50 + 50, y: 250 })
-    }
-    return tables
-  }
-
-  // Generate available times (every 30 min from 6am to 1am next day)
-  function generateAvailableTimes(selectedDate) {
-    const times = []
-    let current = new Date(selectedDate)
-    current.setHours(6, 0, 0) // 6am start
-
-    while (current.getHours() < 27) { // 1am next day = 27:00
-      times.push(formatTime(current))
-      current = new Date(current.getTime() + 30 * 60000) // +30min
-    }
-    return times
-  }
-
-  function formatTime(date) {
-    const h = date.getHours() % 12 || 12
-    const m = date.getMinutes()
-    const ampm = date.getHours() < 12 ? 'AM' : 'PM'
-    return `${h}:${m < 10 ? '0' : ''}${m} ${ampm}`
-  }
-
-  // Check if table is available at given time
-  function isTableAvailable(table, dateTimeStr) {
-    // Simplified: table is available if not already booked at that time
-    // In a real app, would check against bookings database
-    const bookings = getBookingsForDate(date)
-    return !bookings.some(b => b.tableId === table.id && b.time === dateTimeStr)
-  }
-
-  // Get bookings for a date (mock data)
-  function getBookingsForDate(dateStr) {
-    // Mock - would come from API
-    return []
-  }
-
-  // Merge tables logic
-  function mergeTables(tableId1, tableId2) {
-    const t1 = tables.find(t => t.id === tableId1)
-    const t2 = tables.find(t => t.id === tableId2)
-    if (!t1 || !t2) return null
-
-    // 8 = 2 four-tables → one six-table
-    // 12 = 2 six-tables → one... well, we don't have that combo, but logic would be
-    const newSize = t1.size + t2.size
-    return { id: `merged-${t1.id}-${t2.id}`, size: newSize, status: 'merged', x: t1.x, y: t1.y }
-  }
-
-  // Handle table click
   function handleTableClick(table) {
-    if (table.status === 'merged') {
-      // If merged, split back
-      setSelectedTable(null)
-      return
-    }
+    if (table.status === 'booked') return
     setSelectedTable(table)
-    // Generate available times for this table and date
-    if (form.date && selectedTable) {
-      setAvailableTimes(generateAvailableTimes(form.date))
-    }
+    setStep(2)
   }
 
-  // Handle time selection
   function handleTimeSelect(time) {
-    setForm(prev => ({
-      ...prev,
-      time,
-      status: 'confirmed'
-    }))
-    // Mark table as booked
-    if (selectedTable) {
-      setTables(prev =>
-        prev.map(t =>
-          t.id === selectedTable.id
-            ? { ...t, status: 'booked' }
-            : t
-        )
+    setForm(prev => ({ ...prev, time }))
+    setTables(prev =>
+      prev.map(t =>
+        t.id === selectedTable.id ? { ...t, status: 'booked' } : t
       )
-    }
+    )
     setStep(4)
   }
 
-  // Cancel reservation
-  function cancelReservation(bookingId) {
+  function cancelReservation() {
     setTables(prev =>
       prev.map(t =>
-        t.id.includes('merged')
-          ? prev.map(tt => tt.id === bookingId ? { ...t, status: 'available' } : t)
-          : t.id === bookingId ? { ...t, status: 'available' } : t
+        t.id === selectedTable?.id ? { ...t, status: 'available' } : t
       )
     )
+    setSelectedTable(null)
+    setStep(1)
+    setForm({ name: '', phone: '', date: '', time: '', guests: 2, specialRequests: '' })
   }
+
+  const availableTimes = generateAvailableTimes()
 
   return (
     <section className="py-20 sm:py-28 bg-background relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
+        <div className="text-center mb-12">
+          <span className="font-handwriting text-lg tracking-wider text-olive">✦</span>
+          <h2 className={`font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-espresso mt-2 ${isArabic ? 'font-arabic' : ''}`}>
+            {t('booking.title')}
+          </h2>
+          <p className={`mt-3 text-stone text-sm sm:text-base max-w-md mx-auto ${isArabic ? 'font-arabic' : ''}`}>
+            {t('booking.subtitle')}
+          </p>
+        </div>
+
         {/* Stepper */}
-        <div className="flex justify-center mb-8">
-          {[1, 2, 3, 4].map((stepNum, i) => (
-            <div key={stepNum} className={`flex flex-col items-center ${step <= stepNum ? 'text-olive' : 'text-stone/60'}`}>
-              <span className="w-8 h-8 rounded-full bg-gold text-espresso flex items-center justify-center text-sm font-bold mb-2">
-                {stepNum}
-              </span>
-              {stepNum < 4 ? <span className={`border-b ${step <= stepNum + 1 ? 'olive' : 'transparent'}`}/> : null}
+        <div className="flex justify-center items-center gap-2 mb-10">
+          {[1, 2, 3, 4].map((s) => (
+            <div key={s} className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                step >= s ? 'bg-olive text-white' : 'bg-stone/20 text-stone/60'
+              }`}>
+                {step > s ? <Check size={14} /> : s}
+              </div>
+              {s < 4 && <div className={`w-8 h-0.5 mx-1 ${step > s ? 'bg-olive' : 'bg-stone/20'}`} />}
             </div>
           ))}
         </div>
 
-        {/* Form Steps */}
-        {step === 1 && <Step1 setStep={setStep} />}
-        {step === 2 && <Step2 setStep={setStep} form={form} setForm={setForm} />}
-        {step === 3 && <Step3 setStep={setStep} form={form} selectedTable={selectedTable} availableTimes={availableTimes} />}
-        {step === 4 && <Step4 setStep={setStep} form={form} tables={tables} selectedTable={selectedTable} onCancel={cancelReservation} />}
+        {step === 1 && (
+          <Step1
+            isArabic={isArabic}
+            t={t}
+            tables={tables}
+            selectedTable={selectedTable}
+            onTableClick={handleTableClick}
+            onDateSelect={(date) => { setForm(prev => ({ ...prev, date })); setStep(2) }}
+            form={form}
+            setForm={setForm}
+            setStep={setStep}
+          />
+        )}
+        {step === 2 && (
+          <Step2
+            isArabic={isArabic}
+            t={t}
+            form={form}
+            setForm={setForm}
+            setStep={setStep}
+          />
+        )}
+        {step === 3 && (
+          <Step3
+            isArabic={isArabic}
+            t={t}
+            availableTimes={availableTimes}
+            form={form}
+            onTimeSelect={handleTimeSelect}
+            setStep={setStep}
+          />
+        )}
+        {step === 4 && (
+          <Step4
+            isArabic={isArabic}
+            t={t}
+            form={form}
+            selectedTable={selectedTable}
+            onCancel={cancelReservation}
+            onNew={() => { cancelReservation() }}
+          />
+        )}
       </div>
     </section>
   )
 }
 
-// Step 1: Service/Table type selection
-function Step1({ setStep }) {
+function Step1({ isArabic, t, tables, selectedTable, onTableClick, form, setForm, setStep }) {
   return (
-    <div className="text-center">
-      <h2 className="text-3xl font-bold text-espresso mb-8">{t('booking.title')}</h2>
-
-      <div className="grid grid-cols-2 gap-4 mb-12">
-        <div
-          onClick={() => setStep(2)}
-          className={`group bg-sand/80 rounded-3xl p-8 text-center transition-all duration-300 hover:border-gold/30 ${isArabic ? 'cursor-pointer' : ''}`}
-        >
-          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-olive/10 flex items-center justify-center">
-            <MapPin className="w-6 h-6 text-olive" />
-          </div>
-          <h3>{t('booking.tableSelection')}</h3>
-          <p className="mt-2 text-stone">{t('booking.chooseTable')}</p>
+    <div>
+      <h3 className={`text-xl font-bold text-espresso mb-6 text-center ${isArabic ? 'font-arabic' : ''}`}>
+        {t('booking.tableSelection')}
+      </h3>
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-8 max-w-3xl mx-auto">
+        {tables.map(table => (
+          <button
+            key={table.id}
+            onClick={() => onTableClick(table)}
+            disabled={table.status === 'booked'}
+            className={`rounded-2xl p-4 border text-center transition-all duration-300 ${
+              table.status === 'booked'
+                ? 'bg-red-50 border-red-200 text-red-400 cursor-not-allowed opacity-50'
+                : selectedTable?.id === table.id
+                ? 'bg-olive/10 border-olive text-olive shadow-lg'
+                : 'bg-sand/80 border-gold/10 hover:border-gold/30 hover:shadow-md cursor-pointer'
+            }`}
+          >
+            <div className="text-lg font-bold">{table.size}</div>
+            <div className="text-xs mt-1">{t('booking.people')}</div>
+          </button>
+        ))}
+      </div>
+      <div className="flex items-center justify-center gap-6 text-sm text-stone mb-6">
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded bg-sand border border-gold/10"></span>
+          {t('map.available')}
         </div>
-
-        <div
-          onClick={() => setStep(3)}
-          className={`group bg-sand/80 rounded-3xl p-8 text-center transition-all duration-300 hover:border-gold/30 ${isArabic ? 'cursor-pointer' : ''}`}
-        >
-          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-olive/10 flex items-center justify-center">
-            <Calendar className="w-6 h-6 text-olive" />
-          </div>
-          <h3>{t('booking.date')}</h3>
-          <p className="mt-2 text-stone">{t('booking.selectDate')}</p>
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded bg-red-50"></span>
+          {t('map.booked')}
         </div>
       </div>
-
-      <div className="mt-8">
+      <div className="flex justify-center gap-3">
         <button
           onClick={() => setStep(2)}
-          className={`px-6 py-3 rounded-full bg-olive text-white font-medium hover:bg-olive-dark transition-all duration-300 ${isArabic ? 'font-arabic' : ''}`}
+          disabled={!selectedTable}
+          className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+            selectedTable ? 'bg-olive text-white hover:bg-olive-dark' : 'bg-stone/20 text-stone/50 cursor-not-allowed'
+          }`}
         >
-          {t('booking.chooseTable')}
-        </button>
-        <button
-          onClick={() => setStep(3)}
-          className={`px-6 py-3 rounded-full bg-gold text-espresso font-medium hover:bg-gold-dark transition-all duration-300 ms-3 ${isArabic ? 'font-arabic' : ''}`}
-        >
-          {t('booking.selectDate')}
+          {t('booking.next')} →
         </button>
       </div>
     </div>
   )
 }
 
-// Step 2: Date selection
-function Step2({ setStep, form, setForm }) {
+function Step2({ isArabic, t, form, setForm, setStep }) {
+  const today = new Date()
+  const dates = []
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today)
+    d.setDate(today.getDate() + i)
+    dates.push(d)
+  }
+
+  function formatDate(d) {
+    return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`
+  }
+
+  function displayDate(d) {
+    const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
+    const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
+    return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`
+  }
+
   return (
     <div className="text-center">
-      <h2 className="text-3xl font-bold text-espresso mb-8">{t('booking.selectDate')}</h2>
-
-      <div className="flex justify-center gap-4">
-        <button
-          onClick={() => setStep(1)}
-          className={`px-4 py-2 rounded bg-white/20 backdrop-blur-sm text-sm ${form.date ? 'opacity-100' : 'opacity-50'} ${isArabic ? 'font-arabic' : ''}`}
-        >
+      <h3 className={`text-xl font-bold text-espresso mb-6 ${isArabic ? 'font-arabic' : ''}`}>
+        {t('booking.selectDate')}
+      </h3>
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mb-8 max-w-4xl mx-auto">
+        {dates.map((d, i) => (
+          <button
+            key={i}
+            onClick={() => setForm(prev => ({ ...prev, date: formatDate(d) }))}
+            className={`rounded-2xl p-4 border text-center transition-all duration-300 ${
+              form.date === formatDate(d)
+                ? 'bg-olive text-white border-olive shadow-lg'
+                : 'bg-sand/80 border-gold/10 hover:border-gold/30 hover:shadow-md'
+            }`}
+          >
+            <div className="text-xs opacity-60">{days[d.getDay()]}</div>
+            <div className="text-2xl font-bold mt-1">{d.getDate()}</div>
+            <div className="text-xs mt-1">{months[d.getMonth()]}</div>
+          </button>
+        ))}
+      </div>
+      <div className="flex justify-center gap-3">
+        <button onClick={() => setStep(1)} className="px-6 py-3 rounded-full bg-white/20 text-espresso font-medium hover:bg-white/30 transition-all">
           ← {t('booking.back')}
         </button>
-        <span className="text-lg font-medium">{form.date || t('booking.selectDate')}</span>
         <button
-          onClick={() => setIsDatePickerOpen(true)}
-          className={`px-4 py-2 rounded bg-olive text-white font-medium hover:bg-olive-dark transition-all duration-300 ${isArabic ? 'font-arabic' : ''}`}
+          onClick={() => setStep(3)}
+          disabled={!form.date}
+          className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+            form.date ? 'bg-olive text-white hover:bg-olive-dark' : 'bg-stone/20 text-stone/50 cursor-not-allowed'
+          }`}
         >
-          {t('booking.chooseDate')}
+          {t('booking.next')} →
         </button>
-      </div>
-
-      <div id="date-picker" className="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-cream rounded-xl p-6 shadow-lg max-w-md w-full ${isArabic ? 'direction-rtl' : ''}">
-        <button onClick={() => setIsDatePickerOpen(false)} className="absolute top-right p-2 hover:bg-gold transition-all">
-          <X size={20} />
-        </button>
-        <p className="text-olive text-semibold mb-4">{t('booking.selectDate')}</p>
-        <div className="grid grid-cols-7 mt-4">
-          {[...Array(7)].map((_, i) => (
-            <div
-              key={i}
-              className={`p-3 rounded ${isArabic ? 'text-right' : ''} ${isDatePickerOpen && new Date().getDay() === i ? 'bg-olive text-white' : 'text-stone/50 hover:bg-gold transition-all'}`}
-            >
-              {i + 1}
-            </div>
-          ))}
-        </div>
-        <div className="mt-6 pt-6 border-t border-gold/20">
-          <button
-            onClick={() => {
-              const today = new Date()
-              const selected = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
-              const formatted = `${selected.getDate().toString().padStart(2, '0')}/${(selected.getMonth() + 1).toString().padStart(2, '0')}/${selected.getFullYear()}`
-              setForm(prev => ({ ...prev, date: formatted }))
-              setIsDatePickerOpen(false)
-            }}
-            className="w-full py-3 rounded bg-olive text-white font-medium hover:bg-olive-dark transition-all duration-300"
-          >
-            {t('booking.today')}
-          </button>
-        </div>
       </div>
     </div>
   )
 }
 
-// Step 3: Table selection and time slots
-function Step3({ setStep, form, selectedTable, availableTimes }) {
+function Step3({ isArabic, t, availableTimes, form, onTimeSelect, setStep }) {
   return (
     <div className="text-center">
-      <h2 className="text-3xl font-bold text-espresso mb-8">
-        {t('booking.tableSelection')} {form.date ? ` - ${form.date}` : ''}
-      </h2>
-
-      {selectedTable && selectedTable.status !== 'merged' && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-12">
-          {tables.map(table => (
-            <div
-              key={table.id}
-              onClick={() => handleTableClick(table)}
-              className={`group bg-cream rounded-3xl p-6 sm:p-8 border border-gold/10 hover:border-gold/30 transition-all duration-300 ${
-                selectedTable?.id === table.id ? 'border-olive/50 shadow-lg' : ''
-              } ${table.status === 'booked' ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              <div className="w-14 h-14 rounded-full mx-auto mb-3 bg-${table.size <= 4 ? 'olive/10' : 'gold/10'} flex items-center justify-center">
-                {table.size <= 4 ? (
-                  <span className="text-olive text-xl">{table.size}+</span>
-                ) : (
-                  <span className="text-gold text-xl">6</span>
-                )}
-              </div>
-              <p className="text-espresso font-medium text-sm">{t('booking.table')} {table.size}+ {t('booking.people')}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Time slots */}
-      {availableTimes.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {availableTimes.map(time => (
-            <button
-              key={time}
-              onClick={() => handleTimeSelect(time)}
-              className={`p-2 rounded bg-white/20 text-sm ${form.time === time ? 'bg-olive/20 text-olive' : ''} transition-colors hover:bg-gold/30 ${isArabic ? 'text-right' : ''}`}
-            >
-              {time}
-            </button>
-          ))}
-        </div>
-      )}
-
-      <button
-        onClick={() => setStep(2)}
-        className="mt-8 px-6 py-3 rounded-full bg-olive text-white font-medium hover:bg-olive-dark transition-all duration-300 mb-4"
-      >
+      <h3 className={`text-xl font-bold text-espresso mb-2 ${isArabic ? 'font-arabic' : ''}`}>
+        {t('booking.selectTime')}
+      </h3>
+      <p className="text-stone text-sm mb-6">{form.date}</p>
+      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 mb-8 max-w-4xl mx-auto">
+        {availableTimes.map(time => (
+          <button
+            key={time}
+            onClick={() => onTimeSelect(time)}
+            className={`p-3 rounded-xl border text-sm font-medium transition-all duration-300 ${
+              form.time === time
+                ? 'bg-olive text-white border-olive'
+                : 'bg-sand/80 border-gold/10 hover:border-gold/30 hover:shadow-sm'
+            }`}
+          >
+            {time}
+          </button>
+        ))}
+      </div>
+      <button onClick={() => setStep(2)} className="px-6 py-3 rounded-full bg-white/20 text-espresso font-medium hover:bg-white/30 transition-all">
         ← {t('booking.back')}
       </button>
     </div>
   )
 }
 
-// Step 4: Confirmation
-function Step4({ setStep, form, tables, selectedTable, onCancel }) {
+function Step4({ isArabic, t, form, selectedTable, onCancel, onNew }) {
   return (
-    <div className="text-center">
-      <h2 className="text-3xl font-bold text-espresso mb-8">Réservation confirmée</h2>
-
-      <div className="bg-sand/80 rounded-3xl p-8 sm:p-12 max-w-md mx-auto mb-12">
-        <p className="text-espresso font-medium mb-2">Table {selectedTable?.size}+ personnes</p>
-        <p className="text-lg font-bold text-olive">{form.date}</p>
-        <p className="text-lg font-bold text-olive">{form.time}</p>
-        <p className="text-stone mb-4">{form.guests} {t('booking.people')}</p>
-        <p className="text-stone">{t('booking.duration')} 2h</p>
+    <div className="text-center max-w-md mx-auto">
+      <div className="w-16 h-16 rounded-full bg-olive/10 flex items-center justify-center mx-auto mb-6">
+        <Check size={32} className="text-olive" />
       </div>
-
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <h3 className={`text-2xl font-bold text-espresso mb-4 ${isArabic ? 'font-arabic' : ''}`}>
+        {t('booking.confirmed')}
+      </h3>
+      <div className="bg-sand/80 rounded-3xl p-6 sm:p-8 border border-gold/10 mb-6">
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <Calendar size={18} className="text-olive" />
+          <span className="text-lg font-bold text-olive">{form.date}</span>
+        </div>
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <Clock size={18} className="text-olive" />
+          <span className="text-lg font-bold text-olive">{form.time}</span>
+        </div>
+        {selectedTable && (
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <MapPin size={18} className="text-olive" />
+            <span className="text-stone">Table {selectedTable.size}+ {t('booking.people')}</span>
+          </div>
+        )}
+        <p className="text-stone text-sm mt-4">{t('booking.duration')} 2h</p>
+      </div>
+      <div className="flex gap-3 justify-center">
         <button
-          onClick={() => setStep(1)}
-          className={`px-6 py-3 rounded-full bg-white/20 text-espresso font-medium hover:bg-white/30 transition-all duration-300 ${isArabic ? 'font-arabic' : ''}`}
-        >
-          {t('booking.modify')}
-        </button>
-        <button
-          onClick={() => onCancel(selectedTable?.id)}
-          className={`px-6 py-3 rounded-full bg-red/20 text-white font-medium hover:bg-red/30 transition-all duration-300 ${isArabic ? 'font-arabic' : ''}`}
+          onClick={onCancel}
+          className="px-6 py-3 rounded-full bg-red-50 text-red-500 font-medium hover:bg-red-100 transition-all"
         >
           {t('booking.cancel')}
         </button>
+        <button
+          onClick={onNew}
+          className="px-6 py-3 rounded-full bg-olive text-white font-medium hover:bg-olive-dark transition-all"
+        >
+          {t('booking.newReservation')}
+        </button>
       </div>
-
-      <button
-        onClick={() => setStep(1)}
-        className="mt-6 px-8 py-3.5 rounded-full bg-gold text-espresso font-medium text-sm tracking-wide hover:bg-gold-dark transition-all duration-300"
-      >
-        Nouvelle réservation
-      </button>
     </div>
   )
 }

@@ -1,4 +1,5 @@
-import { useLanguage } from '../../context/LanguageContext'
+import { useState } from 'react'
+import { useLanguage } from '../context/LanguageContext'
 import { MapPin, X } from 'lucide-react'
 
 export default function MapPage() {
