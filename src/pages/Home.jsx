@@ -1,23 +1,12 @@
 import Hero from '../components/home/Hero'
-import Services from '../components/home/Services'
-import Team from '../components/home/Team'
-import WhyChooseUs from '../components/home/WhyChooseUs'
-import Gallery from '../components/home/Gallery'
-import Testimonials from '../components/home/Testimonials'
-import Videos from '../components/home/Videos'
-import Reservation from '../components/home/Reservation'
+import { useLanguage } from '../../context/LanguageContext'
 
-export default function Home() {
+export default function HomePage() {
+  const { t, isArabic } = useLanguage()
+
   return (
-    <>
+    <main className="py-20">
       <Hero />
-      <Services />
-      <Team />
-      <WhyChooseUs />
-      <Gallery />
-      <Testimonials />
-      <Videos />
-      <Reservation />
-    </>
+    </main>
   )
 }

@@ -1,29 +1,13 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/donia-spa/images/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Donia Spa - Wellness & beauté de luxe à Tunis. Hammam traditionnel, massages, soins du visage et rituels bien-être." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Dancing+Script:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <title>Donia Spa | Wellness & Beauté de Luxe à Tunis</title>
+    <title>Donia Restaurant - Tunisian Fine dining</title>
+    <link rel="icon" href="/favicon.svg" />
+    <meta name="description" content="Tunisian restaurant Donia - authentic cuisine, elegant dining, luxury experience" />
   </head>
-  <body>
-    <script>
-      // GitHub Pages SPA redirect
-      (function(l) {
-        if (l.search[1] === '/') {
-          var decoded = l.search.slice(1).split('&').map(function(s) {
-            return s.replace(/~and~/g, '&')
-          }).join('?');
-          window.history.replaceState(null, null,
-            l.pathname.slice(0, -1) + decoded + l.hash
-          );
-        }
-      }(window.location))
-    </script>
+  <body class="bg-background text-foreground">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
