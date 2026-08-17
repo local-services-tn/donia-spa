@@ -19,7 +19,7 @@ function MainLayout({ children }) {
 function App() {
   return (
     <LanguageProvider>
-      <Router basename={import.meta.env.BASE_URL === '/donia-spa/' ? '/donia-spa' : ''}>
+      <Router basename="/donia-spa">
         <div className="min-h-screen bg-sand">
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
