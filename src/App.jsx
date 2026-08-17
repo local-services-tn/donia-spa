@@ -14,7 +14,7 @@ function App() {
 
   return (
     <LanguageProvider>
-      <Router>
+      <Router basename="/donia-spa">
         <div className="min-h-screen bg-background font-sans antialiased">
           <Navbar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
 
