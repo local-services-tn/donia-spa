@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<div id="root"></div>
+<script type="module">
+window.__errors = [];
+window.onerror = (msg, src, line, col) => window.__errors.push('ERROR: ' + msg + ' @L' + line);
+window.onunhandledrejection = (e) => window.__errors.push('REJECT: ' + (e.reason?.stack || e.reason?.message || e.reason));
+try {
+  const mod = await import('/donia-spa/assets/index-TgZ2ckgO.js');
+  window.__errors.push('module loaded OK');
+} catch(e) {
+  window.__errors.push('IMPORT ERROR: ' + e.message);
+}
+</script>
+</body>
+</html>
